@@ -19,4 +19,15 @@ In `appsettings.json` you can configure the name of your bot, the channel, the f
 ```
 
 TwitchBot uses a Sqlite database to store the commands and sounds in a local database. 
+The `TwitchBotDB.db` database file will be created automatically when the application starts.
+
+To prepare the database with your own commands, add them to the Entity in the `ApplicationDbContext.cs` file.
+
+We have the following database fields:
+- `ID` Id to identify the record
+- `CommandType` Enum to classify the command (text/sound)
+- `CommandName` Name of the command
+- `CommandOutput` Text output for the chat command
+- `SoundFile` Name of the sound file for sound commands
+
 

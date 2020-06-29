@@ -38,3 +38,4 @@ builder.Entity<Command>()
           new Command() { Id = 1, CommandType = CommandType.Text, CommandName = "!project", CommandOutput = "We're working today... on me! The Twitchbot. :-)", SoundFile = ""}
         );
 ```
+

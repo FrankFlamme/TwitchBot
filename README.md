@@ -40,4 +40,7 @@ builder.Entity<Command>()
         );
 ```
 
-You can also use `[UserName]`in your `CommandOutput` field, to show the user name in the command.
+You can also use `[UserName]`in your `CommandOutput` field to show the user name in the command:
+```html
+new Command() { Id = 4, Type = CommandType.Text, Name = "attention", Output = "[UserName] need to get attention by ...", SoundFile = "" }
+```

@@ -8,13 +8,14 @@ TwitchBot is a .NET core console application written in C# to connect your own b
 ## Preparation
 For using your own bot, you need to configure some properties.
 
-In `appsettings.json` you can configure the name of your bot, the channel, the folder for your sounds and the access token.
+In `appsettings.json` you can configure the name of your bot, the channel, the folder for your sounds, the access token and the welcome message, if your bot is joining the channel.
 ```html
 {
   "bot_name": "YOUR BOTNAME",
   "bot_access_token": "YOUR TOKEN",
   "channel_name": "CHANNEL",
-  "sound_path": "PATH TO YOUR SOUND FILES"
+  "sound_path": "PATH TO YOUR SOUND FILES",
+  "bot_welcome_msg": "Welcome, I'm your bot."
 }
 ```
 
@@ -39,3 +40,4 @@ builder.Entity<Command>()
         );
 ```
 
+You can also use `[UserName]`in your `CommandOutput` field, to show the user name in the command.

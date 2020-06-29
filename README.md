@@ -30,4 +30,11 @@ We have the following database fields:
 - `CommandOutput` Text output for the chat command
 - `SoundFile` Name of the sound file for sound commands
 
-
+Example for implementation in `ApplicationDbContext.cs`:
+```html
+builder.Entity<Command>()
+       .HasData(
+          // Insert your Commands here.
+          new Command() { Id = 1, CommandType = CommandType.Text, CommandName = "!project", CommandOutput = "We're working today... on me! The Twitchbot. :-)", SoundFile = ""}
+        );
+```

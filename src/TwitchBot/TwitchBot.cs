@@ -1,22 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.FileExtensions;
+﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using TwitchBot.Data;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using WMPLib;
 using System.IO;
+using NAudio.Wave;
+using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace TwitchBot
 {
@@ -41,7 +35,7 @@ namespace TwitchBot
 
             _soundPath = config["sound_path"];
             _botWelcomeMsg = config["bot_welcome_msg"];
-                
+
             ConnectionCredentials credentials = new ConnectionCredentials(config["bot_name"], config["bot_access_token"]);
             var clientOptions = new ClientOptions
             {
@@ -50,6 +44,7 @@ namespace TwitchBot
             };
 
             WebSocketClient wsClient = new WebSocketClient(clientOptions);
+            // TODO can be moved to an own Client class
             _client = new TwitchClient(wsClient);
             _client.Initialize(credentials, config["channel_name"]);
 
@@ -76,31 +71,55 @@ namespace TwitchBot
         {
             if (e.ChatMessage.Message.StartsWith('!'))
             {
-                var outputCommand = _db.Command.FirstOrDefault(c => "!" + c.Name == e.ChatMessage.Message)?.Output;                
-                var isSound = _db.Command.FirstOrDefault(st => "!" + st.Name == e.ChatMessage.Message)?.Type;
-                var output = outputCommand.Replace("[UserName]", e.ChatMessage.Username);
+                var command = _db.Command.FirstOrDefault<Command>(c => "!" + c.Name == e.ChatMessage.Message);
 
-                if (outputCommand != null && isSound != CommandType.Sound)
+                if (command != null)
                 {
-                    _client.SendMessage(e.ChatMessage.Channel, output);
-                }
-                else if (outputCommand != null && isSound == CommandType.Sound)
-                {
-                    var soundFile = _db.Command.FirstOrDefault(s => "!" + s.Name == e.ChatMessage.Message)?.SoundFile;
-                    WindowsMediaPlayer mediaPlayer = new WindowsMediaPlayer
+                    var commandOutput = ConsiderCommandPlaceholders(command, e.ChatMessage);
+
+                    SendMessage(e.ChatMessage.Channel, commandOutput);
+
+                    // Optionally play a sound.
+                    if (IsValidFileName(command.SoundFile))
                     {
-                        URL = $"{_soundPath}{soundFile}"
-                    };
-
-                    mediaPlayer.controls.play();
-                    _client.SendMessage(e.ChatMessage.Channel, output);
+                        PlaySound(command.SoundFile);
+                    }
                 }
             }
+        }
+
+        private string ConsiderCommandPlaceholders(Command command, ChatMessage chatMessage) => command.Output.Replace("[UserName]", chatMessage.Username);
+
+        private void PlaySound(string fileName)
+        {
+            using (var audioFile = new AudioFileReader(GetSoundFilePath(fileName)))
+            using (var outputDevice = new WaveOutEvent())
+            {
+                outputDevice.Init(audioFile);
+                outputDevice.Play();
+
+                while (outputDevice.PlaybackState == PlaybackState.Playing)
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        }
+
+        private void SendMessage(string channel, string message)
+        {
+            _client.SendMessage(channel, message);
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
             Console.WriteLine($"Connected to {e.AutoJoinChannel}");
         }
+
+        private string GetProjectPath() => Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+
+        private string GetSoundFilePath(string soundFile) => GetProjectPath() + @"\Sounds\" + soundFile;
+
+        // TODO can be moved to an own validation class
+        private bool IsValidFileName(string? fileName) => fileName != null && Regex.IsMatch(fileName, @"^[\w\-. ]+$");
     }
 }

@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TwitchBot.Data
 {
@@ -26,9 +21,10 @@ namespace TwitchBot.Data
             base.OnModelCreating(builder);
 
             // TODO: Type in your commands here!
-            //builder.Entity<Command>()
-            //    .HasData(
-            //    );
+            builder.Entity<Command>()
+                .HasData(
+                    new Command() { Id = 1, Type = CommandType.Text, Name = "test", Output = "We're working today... on me! The Twitchbot. :-)", SoundFile = "" }
+                );
         }
     }
 }

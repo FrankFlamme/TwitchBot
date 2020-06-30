@@ -1,17 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TwitchBot.Data;
 
 namespace TwitchBot
 {
-    class Program
+    internal static class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main()
         {
             using var context = new ApplicationDbContext();
             TwitchBot bot = new TwitchBot(context);
 
-            while(true)
+            while (true)
             {
                 await Task.Delay(1000);
             }

@@ -3,9 +3,9 @@ using TwitchBot.Data;
 
 namespace TwitchBot
 {
-    internal static class Program
+    public static class Program
     {
-        private static async Task Main()
+        public static async Task Main()
         {
             using var context = new ApplicationDbContext();
             TwitchBot bot = new TwitchBot(context);

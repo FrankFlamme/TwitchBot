@@ -20,10 +20,10 @@ namespace TwitchBot.Data
         {
             base.OnModelCreating(builder);
 
-            // TODO: Type in your commands here!
+            // Command seeding.
             builder.Entity<Command>()
                 .HasData(
-                    new Command() { Id = 1, Type = CommandType.Text, Name = "test", Output = "We're working today... on me! The Twitchbot. :-)", SoundFile = "" }
+                    new Command() { Id = 1, Type = CommandType.Text, Name = "test", Output = "This is a sample test command. :-)", SoundFile = "" }
                 );
         }
     }

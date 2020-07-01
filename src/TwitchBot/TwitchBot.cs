@@ -44,7 +44,7 @@ namespace TwitchBot
             };
 
             WebSocketClient wsClient = new WebSocketClient(clientOptions);
-            // TODO can be moved to an own Client class
+
             _client = new TwitchClient(wsClient);
             _client.Initialize(credentials, config["channel_name"]);
 

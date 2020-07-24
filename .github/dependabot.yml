@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "dotnet:nuget"
+    directory: "/src"
+    schedule:
+      interval: "daily"
